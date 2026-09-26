@@ -1,0 +1,174 @@
+@import 'tailwindcss';
+
+/* Class-based dark mode so a theme toggle can be added without a rebuild. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans:
+    'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+    sans-serif;
+  --font-display:
+    'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+    sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Brand ramp - violet primary */
+  --color-brand-50: #f3f1ff;
+  --color-brand-100: #e9e4ff;
+  --color-brand-200: #d5cbff;
+  --color-brand-300: #b7a5ff;
+  --color-brand-400: #9276ff;
+  --color-brand-500: #7547f7;
+  --color-brand-600: #6228e8;
+  --color-brand-700: #4f1dbb;
+  --color-brand-800: #401a95;
+  --color-brand-900: #341975;
+  --color-brand-950: #1e0d45;
+
+  /* Accent - cyan used sparingly for gradient endpoints and success states */
+  --color-accent-300: #67e8f9;
+  --color-accent-400: #22d3ee;
+  --color-accent-500: #06b6d4;
+  --color-accent-600: #0891b2;
+
+  /* Neutral canvas */
+  --color-ink-50: #f7f7fa;
+  --color-ink-100: #eeeef3;
+  --color-ink-200: #d9d9e2;
+  --color-ink-300: #b6b6c4;
+  --color-ink-400: #8b8b9e;
+  --color-ink-500: #6b6b7d;
+  --color-ink-600: #50505f;
+  --color-ink-700: #3d3d49;
+  --color-ink-800: #26262f;
+  --color-ink-900: #16161c;
+  --color-ink-950: #0b0b10;
+  --color-ink-1000: #07070c;
+
+  --radius-card: 1.25rem;
+
+  --shadow-glow: 0 0 0 1px rgb(117 71 247 / 0.35), 0 18px 60px -20px rgb(117 71 247 / 0.55);
+
+  --animate-aurora: aurora 22s ease-in-out infinite alternate;
+  --animate-shimmer: shimmer 2.4s linear infinite;
+}
+
+@keyframes aurora {
+  0% {
+    transform: translate3d(-6%, -4%, 0) scale(1);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate3d(5%, 3%, 0) scale(1.12);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate3d(-2%, 6%, 0) scale(1.04);
+    opacity: 0.6;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  * {
+    border-color: color-mix(in srgb, var(--color-ink-100) 12%, transparent);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background-color: var(--color-ink-1000);
+    color: var(--color-ink-50);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* No horizontal scroll at any breakpoint, including 320px. */
+    overflow-x: hidden;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-400);
+    outline-offset: 2px;
+    border-radius: 0.35rem;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-brand-500) 35%, transparent);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+}
+
+@layer utilities {
+  /* Subtle grid used behind the hero. */
+  .bg-grid {
+    background-image:
+      linear-gradient(
+        to right,
+        color-mix(in srgb, var(--color-ink-100) 5%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--color-ink-100) 5%, transparent) 1px,
+        transparent 1px
+      );
+    background-size: 56px 56px;
+  }
+
+  .text-gradient {
+    background-image: linear-gradient(
+      100deg,
+      var(--color-ink-50) 0%,
+      var(--color-ink-50) 35%,
+      var(--color-brand-300) 62%,
+      var(--color-accent-300) 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  .glass-panel {
+    background-color: color-mix(in srgb, var(--color-ink-900) 55%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+}
+
+/* Honour the OS-level reduced-motion preference everywhere. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
