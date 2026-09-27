@@ -1,10 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { App } from './App';
-import { api } from '@/lib/api';
+import { api, authApi } from '@/lib/api';
 import { ApiClientError } from '@/lib/apiClient';
+import { sessionStore } from '@/lib/sessionStore';
 import type { HealthData } from '@/types/api';
 
 const HEALTH: HealthData = {
@@ -23,6 +24,20 @@ function renderApp() {
     </MemoryRouter>,
   );
 }
+
+beforeEach(() => {
+  sessionStore.clear();
+  // `App` bootstraps the session on mount, so this suite has to answer that
+  // request or it reaches the network from jsdom.
+  vi.spyOn(authApi, 'refresh').mockRejectedValue(
+    new ApiClientError({
+      kind: 'http',
+      message: 'No session cookie was sent.',
+      status: 401,
+      code: 'UNAUTHORIZED',
+    }),
+  );
+});
 
 describe('App shell', () => {
   it('renders the EasyTube brand', async () => {

@@ -2,10 +2,11 @@ import { useReducedMotion } from 'framer-motion';
 import { ShieldCheck, Sparkles, Zap } from 'lucide-react';
 import { Link, NavLink } from 'react-router-dom';
 
+import { useAuth } from '@/auth/authContext';
 import { Logo } from '@/components/brand/Logo';
 import { cn } from '@/lib/utils';
 
-/** Phase 1 ships the home route only; the rest arrive in later phases. */
+/** Home and the account screen exist; the rest arrive in later phases. */
 const NAV_LINKS = [
   { to: '/', label: 'Home', isReady: true },
   { to: '/downloads', label: 'Downloads', isReady: false },
@@ -51,15 +52,66 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <span
-            className="hidden rounded-lg border border-ink-100/10 px-3 py-2 text-sm text-ink-400 sm:inline"
-            title="Account system arrives in Phase 11"
-          >
-            Login
-          </span>
+          <AccountControls />
         </div>
       </div>
     </header>
+  );
+}
+
+/**
+ * Sign-in links, or the signed-in user's name plus a sign-out button.
+ *
+ * Reads auth state rather than taking props so the header and the routes can
+ * never disagree about who is signed in.
+ */
+function AccountControls() {
+  const { status, user, logout } = useAuth();
+
+  if (status === 'loading') {
+    return <span className="hidden px-3 py-2 text-sm text-ink-500 sm:inline">Checking…</span>;
+  }
+
+  if (status === 'anonymous' || !user) {
+    return (
+      <>
+        <Link
+          to="/login"
+          className="rounded-lg px-3 py-2 text-sm text-ink-300 transition-colors duration-200 hover:text-ink-50"
+        >
+          Sign in
+        </Link>
+        <Link
+          to="/register"
+          className="rounded-lg bg-brand-600 px-3 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-brand-500"
+        >
+          Create account
+        </Link>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <NavLink
+        to="/account"
+        className={({ isActive }) =>
+          cn(
+            'max-w-[10rem] truncate rounded-lg px-3 py-2 text-sm transition-colors duration-200',
+            isActive ? 'text-ink-50' : 'text-ink-300 hover:text-ink-50',
+          )
+        }
+      >
+        {user.displayName}
+      </NavLink>
+      <button
+        type="button"
+        onClick={() => void logout()}
+        className="rounded-lg border border-ink-100/15 px-3 py-2 text-sm text-ink-300 transition-colors duration-200 hover:border-rose-400/40 hover:text-rose-200"
+      >
+        Sign out
+      </button>
+    </>
   );
 }
 

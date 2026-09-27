@@ -22,7 +22,9 @@ export interface ApiHealthState {
  * The interval is paused while the tab is hidden to avoid pointless requests,
  * and every in-flight request is discarded on unmount.
  */
-export function useApiHealth(pollIntervalMs = clientEnv.VITE_HEALTH_POLL_INTERVAL_MS): ApiHealthState {
+export function useApiHealth(
+  pollIntervalMs = clientEnv.VITE_HEALTH_POLL_INTERVAL_MS,
+): ApiHealthState {
   const [status, setStatus] = useState<ApiStatus>('checking');
   const [data, setData] = useState<HealthData | null>(null);
   const [error, setError] = useState<ApiClientError | null>(null);

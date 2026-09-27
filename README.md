@@ -15,36 +15,35 @@ queued, observable pipeline that delivers a temporary signed link.
 
 ## Status
 
-| Phase | Scope                                                              | State        |
-| ----- | ------------------------------------------------------------------ | ------------ |
-| **1** | **Monorepo, toolchain, env config, health endpoint, client shell** | **Complete** |
-| **2** | **Backend architecture (config, db, redis, queue bootstrapping)**  | **Complete** |
-| 3     | MongoDB models                                                     | **Complete** |
-| **4** | **Authentication (JWT + refresh rotation)**                        | **Complete** |
-| 5     | Provider abstraction                                               | Pending      |
-| 6     | Media analysis API                                                 | Pending      |
-| 7     | Redis + BullMQ                                                     | Pending      |
-| 8     | FFmpeg processing service                                          | Pending      |
-| 9     | Download manager + live progress                                   | Pending      |
-| 10    | React UI                                                           | Pending      |
-| 11    | Authentication UI                                                  | Pending      |
-| 12    | History                                                            | Pending      |
-| 13    | Admin dashboard                                                    | Pending      |
-| 14    | Security hardening + rate limiting                                 | Pending      |
-| 15    | Testing expansion                                                  | Pending      |
-| 16    | Docker (app images)                                                | Pending      |
-| 17    | Production deployment                                              | Pending      |
+| Phase  | Scope                                                              | State        |
+| ------ | ------------------------------------------------------------------ | ------------ |
+| **1**  | **Monorepo, toolchain, env config, health endpoint, client shell** | **Complete** |
+| **2**  | **Backend architecture (config, db, redis, queue bootstrapping)**  | **Complete** |
+| 3      | MongoDB models                                                     | **Complete** |
+| **4**  | **Authentication (JWT + refresh rotation)**                        | **Complete** |
+| 5      | Provider abstraction                                               | Pending      |
+| 6      | Media analysis API                                                 | Pending      |
+| 7      | Redis + BullMQ                                                     | Pending      |
+| 8      | FFmpeg processing service                                          | Pending      |
+| 9      | Download manager + live progress                                   | Pending      |
+| 10     | React UI                                                           | Pending      |
+| **11** | **Authentication UI**                                              | **Complete** |
+| 12     | History                                                            | Pending      |
+| 13     | Admin dashboard                                                    | Pending      |
+| 14     | Security hardening + rate limiting                                 | Pending      |
+| 15     | Testing expansion                                                  | Pending      |
+| 16     | Docker (app images)                                                | Pending      |
+| 17     | Production deployment                                              | Pending      |
 
 **What exists today:** a running Express + TypeScript API with a validated environment, structured
 logging, correlation IDs, a centralised error handler, separate liveness (`GET /api/v1/health`) and
 readiness (`GET /api/v1/health/ready`) endpoints, and injectable MongoDB/Redis connection managers
 with retry and credential-redaction behaviour; the full user, refresh-session and audit-log schema
-layer with explicit index management; and a working authentication API — registration, sign-in,
+layer with explicit index management; a working authentication API — registration, sign-in,
 single-use rotating refresh tokens with reuse detection, account lockout, password change, and
-per-device session revocation — behind Argon2id hashing and double-submit CSRF protection, plus a React
-
-- Vite client that renders the EasyTube brand and polls the liveness endpoint to show a live
-  connection status.
+per-device session revocation — behind Argon2id hashing and double-submit CSRF protection; and a React
+client that registers, signs in, keeps the session alive across reloads, and manages devices and
+password from an account screen.
 
 ---
 
@@ -368,6 +367,37 @@ are exempt: a cross-site form cannot set an `Authorization` header, so there is 
 
 ---
 
+## Client screens
+
+| Route       | Screen         | Notes                                                            |
+| ----------- | -------------- | ---------------------------------------------------------------- |
+| `/`         | Home           | Landing page plus the live API status card.                      |
+| `/login`    | Sign in        | Redirects to `/account` when already signed in.                  |
+| `/register` | Create account | Client-side password policy, checked before the request is sent. |
+| `/account`  | Your account   | Profile, active sessions, password change. Requires a session.   |
+| `*`         | Not found      | —                                                                |
+
+**How the session is held.** The access token lives in memory only
+(`client/src/lib/sessionStore.ts`) and is never written to `localStorage` or `sessionStorage`:
+web storage is readable by any script on the page, which is the exposure `httpOnly` cookies exist to
+prevent. The durable credential is the `easytube_rt` cookie, so a page load starts anonymous and
+`AuthProvider` redeems that cookie once on startup. A `401` on any later request triggers one silent
+refresh and replays the request.
+
+That refresh is deliberately **single-flight**. Refresh tokens are single-use, and the server treats
+a second redemption of the same token as replay and revokes the whole family — so several parallel
+requests failing at once must not each try to redeem it.
+
+**CSRF.** Unsafe requests get `X-CSRF-Token` automatically, from the in-memory copy of the last
+auth response or, failing that, the readable `easytube_csrf` cookie.
+
+> **Deployment constraint.** Reading the CSRF cookie from script only works when the client and API
+> share an origin — the Vite dev proxy, or a host that rewrites `/api` to the API. On a split-host
+> setup the cookie belongs to the API's domain, so the in-memory copy is used and a reload cannot
+> silently restore a session. Prefer a same-origin or same-registrable-domain deployment.
+
+---
+
 ## Environment variables
 
 Full annotated lists live in [`server/.env.example`](server/.env.example) and
@@ -630,8 +660,9 @@ by concatenation; map full names instead.
 
 ## Roadmap
 
-Phases 1–4 are complete; the status table at the top is the source of truth. Next up is the provider
-abstraction and media analysis API, then the Redis/BullMQ pipeline.
+Phases 1–4 and 11 are complete; the status table at the top is the source of truth. Next up is the
+React UI shell for the media pipeline, then the provider abstraction and media analysis API, then the
+Redis/BullMQ pipeline.
 
 Browser extension · Android app · PWA · cloud storage integration · playlists · batch processing of
 authorized URLs · scheduled processing · additional permitted providers · download notifications ·

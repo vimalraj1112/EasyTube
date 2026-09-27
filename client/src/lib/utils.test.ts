@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { formatBytes, formatDuration } from './utils';
+import { formatBytes, formatDateTime, formatDuration } from './utils';
 
 describe('formatBytes', () => {
   it('formats byte tiers', () => {
@@ -25,5 +25,19 @@ describe('formatDuration', () => {
   it('guards against invalid input', () => {
     expect(formatDuration(Number.NaN)).toBe('--:--');
     expect(formatDuration(-1)).toBe('--:--');
+  });
+});
+
+describe('formatDateTime', () => {
+  it('renders an ISO timestamp instead of "Invalid Date"', () => {
+    expect(formatDateTime('2026-01-02T10:00:00.000Z')).not.toBe('Invalid Date');
+    expect(formatDateTime('2026-01-02T10:00:00.000Z')).not.toBe('—');
+  });
+
+  it('guards against missing or unparseable input', () => {
+    expect(formatDateTime(null)).toBe('—');
+    expect(formatDateTime(undefined)).toBe('—');
+    expect(formatDateTime('')).toBe('—');
+    expect(formatDateTime('not-a-date')).toBe('—');
   });
 });

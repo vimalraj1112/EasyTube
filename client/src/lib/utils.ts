@@ -28,3 +28,21 @@ export function formatDuration(totalSeconds: number): string {
 
   return hours > 0 ? `${hours}:${pad(minutes)}:${pad(seconds)}` : `${minutes}:${pad(seconds)}`;
 }
+
+const dateTimeFormatter = new Intl.DateTimeFormat(undefined, {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+});
+
+/**
+ * ISO timestamp -> local date and time.
+ *
+ * The API serialises its `Date` fields to ISO strings, so anything missing or
+ * unparseable renders as a dash rather than "Invalid Date".
+ */
+export function formatDateTime(value: string | null | undefined): string {
+  if (!value) return '—';
+
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? '—' : dateTimeFormatter.format(date);
+}
