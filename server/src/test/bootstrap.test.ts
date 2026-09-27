@@ -121,10 +121,7 @@ describe('shutdownAll', () => {
     const server = await listen();
     const { port } = server.address() as AddressInfo;
 
-    await shutdownAll(
-      { server, database: okManager(), redis: okManager() },
-      'test',
-    );
+    await shutdownAll({ server, database: okManager(), redis: okManager() }, 'test');
 
     await expect(request(`http://127.0.0.1:${port}`).get('/')).rejects.toThrow();
   });

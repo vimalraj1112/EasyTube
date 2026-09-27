@@ -61,9 +61,7 @@ export function softDeletePlugin(schema: Schema, options: SoftDeleteOptions = {}
     return Boolean(this.deletedAt);
   };
 
-  methods.restore = async function restore(
-    this: SoftDeleted<SoftDeleteFields>,
-  ): Promise<boolean> {
+  methods.restore = async function restore(this: SoftDeleted<SoftDeleteFields>): Promise<boolean> {
     if (!this.deletedAt) {
       return false;
     }

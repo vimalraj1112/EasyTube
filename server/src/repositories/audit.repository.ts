@@ -22,9 +22,7 @@ export function createAuditRepository(model: AuditLogModel = AuditLog): AuditPor
   return {
     async write(entry) {
       const actor =
-        entry.actor && Types.ObjectId.isValid(entry.actor)
-          ? new Types.ObjectId(entry.actor)
-          : null;
+        entry.actor && Types.ObjectId.isValid(entry.actor) ? new Types.ObjectId(entry.actor) : null;
 
       await model.create({
         action: entry.action,

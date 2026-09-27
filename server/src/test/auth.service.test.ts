@@ -591,12 +591,7 @@ describe('changePassword', () => {
     const first = await registerUser(h);
     await h.service.login({ email: first.user.email, password: VALID_PASSWORD }, CONTEXT);
 
-    await h.service.changePassword(
-      first.user.id,
-      VALID_PASSWORD,
-      'AnotherStrongPass7',
-      CONTEXT,
-    );
+    await h.service.changePassword(first.user.id, VALID_PASSWORD, 'AnotherStrongPass7', CONTEXT);
 
     // Exactly one session remains: the one just issued for this request.
     const sessions = await h.service.listSessions(first.user.id);

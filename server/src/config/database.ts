@@ -78,7 +78,9 @@ function isRetryable(error: unknown): boolean {
   }
   // Mongoose surfaces a wrapped aggregate error when every server in the
   // selection times out.
-  return error instanceof Error && /buffering timed out|ECONNREFUSED|ETIMEDOUT/i.test(error.message);
+  return (
+    error instanceof Error && /buffering timed out|ECONNREFUSED|ETIMEDOUT/i.test(error.message)
+  );
 }
 
 const sleep = (ms: number): Promise<void> =>

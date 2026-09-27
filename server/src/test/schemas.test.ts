@@ -50,7 +50,9 @@ describe('sourceUrlSchema', () => {
   });
 
   it('trims and drops a trailing slash', () => {
-    expect(sourceUrlSchema.parse('  https://example.com/a.mp4/  ')).toBe('https://example.com/a.mp4');
+    expect(sourceUrlSchema.parse('  https://example.com/a.mp4/  ')).toBe(
+      'https://example.com/a.mp4',
+    );
   });
 
   it('rejects an empty or malformed URL', () => {
@@ -172,7 +174,9 @@ describe('registerUserSchema', () => {
 
   it('enforces the password policy', () => {
     expect(registerUserSchema.safeParse({ ...valid, password: 'short1A' }).success).toBe(false);
-    expect(registerUserSchema.safeParse({ ...valid, password: 'alllowercase123' }).success).toBe(false);
+    expect(registerUserSchema.safeParse({ ...valid, password: 'alllowercase123' }).success).toBe(
+      false,
+    );
     expect(registerUserSchema.safeParse(valid).success).toBe(true);
   });
 });
@@ -212,8 +216,11 @@ describe('createDownloadSchema', () => {
 
   it('rejects an unsupported container', () => {
     expect(
-      createDownloadSchema.safeParse({ mediaItemId: OBJECT_ID, container: 'avi', mediaFormatId: VALID_ID })
-        .success,
+      createDownloadSchema.safeParse({
+        mediaItemId: OBJECT_ID,
+        container: 'avi',
+        mediaFormatId: VALID_ID,
+      }).success,
     ).toBe(false);
   });
 });

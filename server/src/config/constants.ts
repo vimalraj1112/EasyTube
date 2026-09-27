@@ -131,8 +131,7 @@ export const DOWNLOAD_OUTPUT_KINDS = {
   THUMBNAIL: 'THUMBNAIL',
   SUBTITLE: 'SUBTITLE',
 } as const;
-export type DownloadOutputKind =
-  (typeof DOWNLOAD_OUTPUT_KINDS)[keyof typeof DOWNLOAD_OUTPUT_KINDS];
+export type DownloadOutputKind = (typeof DOWNLOAD_OUTPUT_KINDS)[keyof typeof DOWNLOAD_OUTPUT_KINDS];
 
 export const STORAGE_STATUSES = {
   PENDING: 'PENDING',

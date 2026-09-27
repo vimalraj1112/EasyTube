@@ -69,7 +69,7 @@ function isBlockedIpv4Address(address: number): boolean {
       return false;
     }
     const mask = bits === 0 ? 0 : (-1 << (32 - bits)) >>> 0;
-    return ((address & mask) >>> 0) === ((base & mask) >>> 0);
+    return (address & mask) >>> 0 === (base & mask) >>> 0;
   });
 }
 

@@ -92,21 +92,19 @@ function secretFor(type: TokenType): string {
 
 export function issueAccessToken(claims: AccessTokenClaims): IssuedToken {
   const expiresIn = ttlToSeconds(env.JWT_ACCESS_TTL);
-  const token = jwt.sign(
-    { ...claims, typ: TOKEN_TYPES.ACCESS },
-    secretFor(TOKEN_TYPES.ACCESS),
-    { ...baseOptions(), expiresIn },
-  );
+  const token = jwt.sign({ ...claims, typ: TOKEN_TYPES.ACCESS }, secretFor(TOKEN_TYPES.ACCESS), {
+    ...baseOptions(),
+    expiresIn,
+  });
   return { token, expiresInSeconds: expiresIn };
 }
 
 export function issueRefreshToken(claims: RefreshTokenClaims): IssuedToken {
   const expiresIn = ttlToSeconds(env.JWT_REFRESH_TTL);
-  const token = jwt.sign(
-    { ...claims, typ: TOKEN_TYPES.REFRESH },
-    secretFor(TOKEN_TYPES.REFRESH),
-    { ...baseOptions(), expiresIn },
-  );
+  const token = jwt.sign({ ...claims, typ: TOKEN_TYPES.REFRESH }, secretFor(TOKEN_TYPES.REFRESH), {
+    ...baseOptions(),
+    expiresIn,
+  });
   return { token, expiresInSeconds: expiresIn };
 }
 

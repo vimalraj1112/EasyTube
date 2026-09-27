@@ -69,12 +69,12 @@ auditLogSchema.index({ createdAt: -1 }, { name: 'audit_recent' });
 auditLogSchema.index({ action: 1, createdAt: -1 }, { name: 'audit_action_recent' });
 auditLogSchema.index({ actor: 1, createdAt: -1 }, { name: 'audit_actor_recent' });
 // "What happened to this record?" while investigating an incident.
-auditLogSchema.index(
-  { targetType: 1, targetId: 1, createdAt: -1 },
-  { name: 'audit_target' },
-);
+auditLogSchema.index({ targetType: 1, targetId: 1, createdAt: -1 }, { name: 'audit_target' });
 // Retention. The value is overridden per deployment via collMod.
-auditLogSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 90, name: 'audit_ttl' });
+auditLogSchema.index(
+  { createdAt: 1 },
+  { expireAfterSeconds: 60 * 60 * 24 * 90, name: 'audit_ttl' },
+);
 
 auditLogSchema.plugin(paginatePlugin);
 

@@ -34,15 +34,12 @@ export interface PasswordHashOptions {
  * every registered email address.
  */
 const DUMMY_HASH_PROMISE = (async (): Promise<string> => {
-  const hash = await argon2.hash(
-    `easytube-timing-equaliser-${crypto.randomUUID()}`,
-    {
-      type: argon2.argon2id,
-      memoryCost: env.ARGON2_MEMORY_COST_KIB,
-      timeCost: env.ARGON2_TIME_COST,
-      parallelism: env.ARGON2_PARALLELISM,
-    },
-  );
+  const hash = await argon2.hash(`easytube-timing-equaliser-${crypto.randomUUID()}`, {
+    type: argon2.argon2id,
+    memoryCost: env.ARGON2_MEMORY_COST_KIB,
+    timeCost: env.ARGON2_TIME_COST,
+    parallelism: env.ARGON2_PARALLELISM,
+  });
   return hash;
 })();
 
@@ -79,10 +76,7 @@ export interface VerifyResult {
   needsRehash: boolean;
 }
 
-export async function verifyPassword(
-  hash: string,
-  password: string,
-): Promise<VerifyResult> {
+export async function verifyPassword(hash: string, password: string): Promise<VerifyResult> {
   let valid: boolean;
 
   try {

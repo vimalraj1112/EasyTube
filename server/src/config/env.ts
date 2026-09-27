@@ -56,11 +56,16 @@ const envSchema = z
     HOST: z.string().min(1).default('0.0.0.0'),
     API_PREFIX: z
       .string()
-      .regex(/^\/[a-zA-Z0-9/_-]*$/, 'API_PREFIX must start with "/" and contain URL-safe characters')
+      .regex(
+        /^\/[a-zA-Z0-9/_-]*$/,
+        'API_PREFIX must start with "/" and contain URL-safe characters',
+      )
       .default('/api/v1'),
     APP_NAME: z.string().min(1).default('easytube-api'),
     APP_VERSION: z.string().min(1).default('0.1.0'),
-    LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
+    LOG_LEVEL: z
+      .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
+      .default('info'),
     SHUTDOWN_TIMEOUT_MS: z.coerce.number().int().min(0).default(10_000),
     TRUST_PROXY_HOPS: z.coerce.number().int().min(0).default(0),
     BODY_LIMIT: z.string().min(2).default('1mb'),
@@ -132,7 +137,11 @@ const envSchema = z
     ARGON2_TIME_COST: z.coerce.number().int().min(2).max(10).default(2),
     ARGON2_PARALLELISM: z.coerce.number().int().min(1).max(16).default(1),
 
-    RATE_LIMIT_WINDOW_MS: z.coerce.number().int().min(1_000).default(15 * 60 * 1_000),
+    RATE_LIMIT_WINDOW_MS: z.coerce
+      .number()
+      .int()
+      .min(1_000)
+      .default(15 * 60 * 1_000),
     RATE_LIMIT_ANALYZE: z.coerce.number().int().min(1).default(30),
     RATE_LIMIT_DOWNLOAD: z.coerce.number().int().min(1).default(10),
     RATE_LIMIT_AUTH: z.coerce.number().int().min(1).default(10),

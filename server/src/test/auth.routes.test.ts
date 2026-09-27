@@ -160,9 +160,7 @@ describe('POST /api/v1/auth/register', () => {
 
   it('sets the refresh cookie httpOnly and with a path', async () => {
     const { response } = await register(app);
-    const raw = setCookies(response).find((cookie) =>
-      cookie.startsWith(AUTH_COOKIES.REFRESH),
-    );
+    const raw = setCookies(response).find((cookie) => cookie.startsWith(AUTH_COOKIES.REFRESH));
     expect(raw).toBeDefined();
     expect(raw).toMatch(/HttpOnly/i);
     expect(raw).toMatch(/Path=\//i);
@@ -410,9 +408,7 @@ describe('CSRF protection', () => {
 describe('GET /api/v1/auth/me', () => {
   it('returns the caller from the access token', async () => {
     const { app } = build();
-    const registered = await request(app)
-      .post('/api/v1/auth/register')
-      .send(CREDENTIALS);
+    const registered = await request(app).post('/api/v1/auth/register').send(CREDENTIALS);
 
     const response = await request(app)
       .get('/api/v1/auth/me')
@@ -424,9 +420,7 @@ describe('GET /api/v1/auth/me', () => {
 
   it('never includes the password hash', async () => {
     const { app, harness } = build();
-    const registered = await request(app)
-      .post('/api/v1/auth/register')
-      .send(CREDENTIALS);
+    const registered = await request(app).post('/api/v1/auth/register').send(CREDENTIALS);
 
     const response = await request(app)
       .get('/api/v1/auth/me')
@@ -445,9 +439,7 @@ describe('GET /api/v1/auth/me', () => {
 
   it('rejects a refresh token presented as an access token', async () => {
     const { app } = build();
-    const registered = await request(app)
-      .post('/api/v1/auth/register')
-      .send(CREDENTIALS);
+    const registered = await request(app).post('/api/v1/auth/register').send(CREDENTIALS);
     const cookie = cookieValue(registered, AUTH_COOKIES.REFRESH)!;
 
     const response = await request(app)
@@ -461,9 +453,7 @@ describe('GET /api/v1/auth/me', () => {
     // The reason the user is re-read on every request: a stateless check would
     // keep honouring this token until it expired.
     const { app, harness } = build();
-    const registered = await request(app)
-      .post('/api/v1/auth/register')
-      .send(CREDENTIALS);
+    const registered = await request(app).post('/api/v1/auth/register').send(CREDENTIALS);
     harness.state.users[0]!.status = 'SUSPENDED';
 
     const response = await request(app)
@@ -475,9 +465,7 @@ describe('GET /api/v1/auth/me', () => {
 
   it('rejects a token for a user that no longer exists', async () => {
     const { app, harness } = build();
-    const registered = await request(app)
-      .post('/api/v1/auth/register')
-      .send(CREDENTIALS);
+    const registered = await request(app).post('/api/v1/auth/register').send(CREDENTIALS);
     harness.state.users = [];
 
     const response = await request(app)
@@ -494,15 +482,15 @@ describe('POST /api/v1/auth/logout', () => {
     const agent = request.agent(app);
     const registered = await agent.post('/api/v1/auth/register').send(CREDENTIALS);
 
-    const response = await agent.post('/api/v1/auth/logout').set('X-CSRF-Token', dataOf(registered).csrfToken);
+    const response = await agent
+      .post('/api/v1/auth/logout')
+      .set('X-CSRF-Token', dataOf(registered).csrfToken);
 
     expect(response.status).toBe(200);
     expect(harness.state.sessions[0]?.revokedAt).not.toBeNull();
 
     // The cleared cookie must match the original's path, or the browser keeps it.
-    const cleared = setCookies(response).find((cookie) =>
-      cookie.startsWith(AUTH_COOKIES.REFRESH),
-    );
+    const cleared = setCookies(response).find((cookie) => cookie.startsWith(AUTH_COOKIES.REFRESH));
     expect(cleared).toMatch(/easytube_rt=;/);
     expect(cleared).toMatch(/Path=\//i);
   });
@@ -523,7 +511,9 @@ describe('POST /api/v1/auth/logout', () => {
 
     // No Authorization header: signing out must work even once the access token
     // has expired, which is exactly when someone most wants to sign out.
-    const response = await agent.post('/api/v1/auth/logout').set('X-CSRF-Token', dataOf(registered).csrfToken);
+    const response = await agent
+      .post('/api/v1/auth/logout')
+      .set('X-CSRF-Token', dataOf(registered).csrfToken);
     expect(response.status).toBe(200);
   });
 });
@@ -604,9 +594,7 @@ describe('session endpoints', () => {
       .set('X-CSRF-Token', dataOf(registered).csrfToken)
       .set('Authorization', `Bearer ${dataOf(registered).accessToken}`);
 
-    const cleared = setCookies(response).find((cookie) =>
-      cookie.startsWith(AUTH_COOKIES.REFRESH),
-    );
+    const cleared = setCookies(response).find((cookie) => cookie.startsWith(AUTH_COOKIES.REFRESH));
     expect(cleared).toMatch(/easytube_rt=;/);
   });
 

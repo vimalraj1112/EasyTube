@@ -81,12 +81,7 @@ export class ApiError extends Error {
     message = 'Service is temporarily unavailable. Please try again shortly.',
     details?: unknown,
   ): ApiError {
-    return new ApiError(
-      StatusCodes.SERVICE_UNAVAILABLE,
-      message,
-      'SERVICE_UNAVAILABLE',
-      details,
-    );
+    return new ApiError(StatusCodes.SERVICE_UNAVAILABLE, message, 'SERVICE_UNAVAILABLE', details);
   }
 
   static internal(message = 'Something went wrong while processing this media.'): ApiError {

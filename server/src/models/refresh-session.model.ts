@@ -72,12 +72,12 @@ refreshSessionSchema.index({ tokenHash: 1 }, { unique: true, name: 'refresh_toke
 // Revoking a stolen family is one indexed update.
 refreshSessionSchema.index({ family: 1, revokedAt: 1 }, { name: 'refresh_family_revoked' });
 // "Active sessions for this user" on the security screen.
-refreshSessionSchema.index({ user: 1, revokedAt: 1, expiresAt: 1 }, { name: 'refresh_user_active' });
-// Mongo removes the row once the token could no longer be used anyway.
 refreshSessionSchema.index(
-  { expiresAt: 1 },
-  { expireAfterSeconds: 0, name: 'refresh_expiry_ttl' },
+  { user: 1, revokedAt: 1, expiresAt: 1 },
+  { name: 'refresh_user_active' },
 );
+// Mongo removes the row once the token could no longer be used anyway.
+refreshSessionSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0, name: 'refresh_expiry_ttl' });
 
 refreshSessionSchema.plugin(paginatePlugin);
 

@@ -4,11 +4,7 @@ import { z } from 'zod';
 import { createAuthController } from '../controllers/auth.controller';
 import { createAuthenticate } from '../middleware/auth';
 import { validate } from '../middleware/validate';
-import {
-  changePasswordSchema,
-  loginSchema,
-  registerUserSchema,
-} from '../schemas/user.schema';
+import { changePasswordSchema, loginSchema, registerUserSchema } from '../schemas/user.schema';
 import type { AuthService, UserPort } from '../services/auth.service';
 import { asyncHandler } from '../utils/asyncHandler';
 

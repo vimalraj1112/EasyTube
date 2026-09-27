@@ -1,11 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  equaliseTiming,
-  hashPassword,
-  needsRehash,
-  verifyPassword,
-} from '../utils/password';
+import { equaliseTiming, hashPassword, needsRehash, verifyPassword } from '../utils/password';
 
 /**
  * The only suite that runs real argon2. Kept small on purpose: production

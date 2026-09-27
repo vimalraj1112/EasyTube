@@ -85,9 +85,7 @@ export function createUserRepository(model: UserModel = User): UserPort {
     },
 
     async recordFailedLogin(id, failedLoginCount, lockedUntil) {
-      await model
-        .updateOne({ _id: id }, { $set: { failedLoginCount, lockedUntil } })
-        .exec();
+      await model.updateOne({ _id: id }, { $set: { failedLoginCount, lockedUntil } }).exec();
     },
 
     async recordSuccessfulLogin(id, at) {

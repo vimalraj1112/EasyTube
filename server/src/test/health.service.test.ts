@@ -8,8 +8,12 @@ import {
 } from '../services/health.service';
 import type { DependencyCheck, ReadinessReport } from '../types/api';
 
-const up = (detail = 'connected'): DependencyProbe => () => ({ status: 'up', latencyMs: null, detail });
-const down = (detail = 'refused'): DependencyProbe => () => ({ status: 'down', latencyMs: null, detail });
+const up =
+  (detail = 'connected'): DependencyProbe =>
+  () => ({ status: 'up', latencyMs: null, detail });
+const down =
+  (detail = 'refused'): DependencyProbe =>
+  () => ({ status: 'down', latencyMs: null, detail });
 
 /** Narrows a dynamic check key without a non-null assertion. */
 function check(report: ReadinessReport, name: string): DependencyCheck {
@@ -93,11 +97,13 @@ describe('runProbes', () => {
 
   it('runs probes concurrently rather than in series', async () => {
     const started: string[] = [];
-    const slow = (name: string): DependencyProbe => async () => {
-      started.push(name);
-      await new Promise((resolve) => setTimeout(resolve, 20));
-      return { status: 'up', latencyMs: null, detail: name };
-    };
+    const slow =
+      (name: string): DependencyProbe =>
+      async () => {
+        started.push(name);
+        await new Promise((resolve) => setTimeout(resolve, 20));
+        return { status: 'up', latencyMs: null, detail: name };
+      };
 
     const report = await runProbes({ a: slow('a'), b: slow('b'), c: slow('c') });
 
@@ -127,7 +133,10 @@ describe('sourceProbe', () => {
       database: sourceProbe({ isReady: () => false, describe: () => 'mongodb disconnected' }),
     });
 
-    expect(check(report, 'database')).toMatchObject({ status: 'down', detail: 'mongodb disconnected' });
+    expect(check(report, 'database')).toMatchObject({
+      status: 'down',
+      detail: 'mongodb disconnected',
+    });
   });
 });
 

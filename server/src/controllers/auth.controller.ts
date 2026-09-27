@@ -2,12 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import type { Request, Response } from 'express';
 
 import { AUTH_COOKIES } from '../config/constants';
-import type {
-  AuthResult,
-  AuthService,
-  PublicUser,
-  SessionSummary,
-} from '../services/auth.service';
+import type { AuthResult, AuthService, PublicUser, SessionSummary } from '../services/auth.service';
 import { fingerprintOf } from '../middleware/auth';
 import type { ChangePasswordInput, LoginInput, RegisterUserInput } from '../schemas/user.schema';
 import { ApiError } from '../utils/ApiError';
@@ -213,10 +208,7 @@ export function createAuthController(service: AuthService): AuthController {
   /** GET /api/v1/auth/sessions - active sessions, for the security screen. */
   async function listSessions(req: Request, res: Response): Promise<void> {
     const { userId } = auth(req);
-    const sessions: SessionSummary[] = await service.listSessions(
-      userId,
-      currentSessionId(req),
-    );
+    const sessions: SessionSummary[] = await service.listSessions(userId, currentSessionId(req));
 
     sendSuccess(res, { message: 'Active sessions.', data: { sessions } });
   }

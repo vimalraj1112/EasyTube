@@ -118,7 +118,9 @@ describe('validate middleware - body', () => {
 
 describe('validate middleware - params', () => {
   it('accepts a valid uuid param', async () => {
-    const app = createTestApp((a) => route(a, 'put', '/downloads/:id', validate({ params: uuidParamSchema })));
+    const app = createTestApp((a) =>
+      route(a, 'put', '/downloads/:id', validate({ params: uuidParamSchema })),
+    );
 
     const response = await request(app).put('/downloads/3f2504e0-4f89-41d3-9a0c-0305e82c3301');
 
@@ -127,7 +129,9 @@ describe('validate middleware - params', () => {
   });
 
   it('rejects a malformed uuid param', async () => {
-    const app = createTestApp((a) => route(a, 'put', '/downloads/:id', validate({ params: uuidParamSchema })));
+    const app = createTestApp((a) =>
+      route(a, 'put', '/downloads/:id', validate({ params: uuidParamSchema })),
+    );
 
     const response = await request(app).put('/downloads/not-a-uuid');
 

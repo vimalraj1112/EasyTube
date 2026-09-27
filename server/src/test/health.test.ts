@@ -12,7 +12,11 @@ function probesFor(state: Record<string, boolean>): Record<string, DependencyPro
   return Object.fromEntries(
     Object.entries(state).map(([name, up]) => [
       name,
-      () => ({ status: up ? ('up' as const) : ('down' as const), latencyMs: null, detail: `${name} ${up ? 'up' : 'down'}` }),
+      () => ({
+        status: up ? ('up' as const) : ('down' as const),
+        latencyMs: null,
+        detail: `${name} ${up ? 'up' : 'down'}`,
+      }),
     ]),
   );
 }
@@ -195,7 +199,9 @@ describe('CORS policy', () => {
   });
 
   it('rejects an unknown origin', async () => {
-    const response = await request(app).get('/api/v1/health').set('Origin', 'https://evil.example.com');
+    const response = await request(app)
+      .get('/api/v1/health')
+      .set('Origin', 'https://evil.example.com');
 
     expect(response.status).toBe(403);
     expect(response.body).toMatchObject({ success: false, error: { code: 'FORBIDDEN' } });

@@ -77,30 +77,21 @@ export function createRefreshSessionRepository(
 
     async revokeFamily(family, reason, at) {
       const result = await model
-        .updateMany(
-          { family, revokedAt: null },
-          { $set: { revokedAt: at, revokedReason: reason } },
-        )
+        .updateMany({ family, revokedAt: null }, { $set: { revokedAt: at, revokedReason: reason } })
         .exec();
       return result.modifiedCount;
     },
 
     async revokeAllForUser(user, reason, at) {
       const result = await model
-        .updateMany(
-          { user, revokedAt: null },
-          { $set: { revokedAt: at, revokedReason: reason } },
-        )
+        .updateMany({ user, revokedAt: null }, { $set: { revokedAt: at, revokedReason: reason } })
         .exec();
       return result.modifiedCount;
     },
 
     async revokeById(id, reason, at) {
       await model
-        .updateOne(
-          { _id: id, revokedAt: null },
-          { $set: { revokedAt: at, revokedReason: reason } },
-        )
+        .updateOne({ _id: id, revokedAt: null }, { $set: { revokedAt: at, revokedReason: reason } })
         .exec();
     },
 

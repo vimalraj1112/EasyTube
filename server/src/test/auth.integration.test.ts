@@ -60,7 +60,11 @@ describe.skipIf(!RUN)('auth integration', () => {
   }, 60_000);
 
   afterEach(async () => {
-    await Promise.all([User.deleteMany({}), RefreshSession.deleteMany({}), AuditLog.deleteMany({})]);
+    await Promise.all([
+      User.deleteMany({}),
+      RefreshSession.deleteMany({}),
+      AuditLog.deleteMany({}),
+    ]);
   });
 
   afterAll(async () => {
@@ -115,10 +119,7 @@ describe.skipIf(!RUN)('auth integration', () => {
         locale: 'en',
       });
 
-      await User.updateOne(
-        { _id: created._id },
-        { $set: { deletedAt: new Date() } },
-      ).exec();
+      await User.updateOne({ _id: created._id }, { $set: { deletedAt: new Date() } }).exec();
 
       await expect(users.findByEmail('deleted@example.com')).resolves.toBeNull();
       await expect(users.findCredentialsById(created._id.toString())).resolves.toBeNull();
@@ -170,7 +171,10 @@ describe.skipIf(!RUN)('auth integration', () => {
   });
 
   describe('refresh session repository', () => {
-    async function seedSession(userId: string, over: Partial<{ family: string }> = {}): Promise<string> {
+    async function seedSession(
+      userId: string,
+      over: Partial<{ family: string }> = {},
+    ): Promise<string> {
       const id = new mongoose.Types.ObjectId().toString();
       await createRefreshSessionRepository().insert({
         _id: id,
@@ -270,10 +274,14 @@ describe.skipIf(!RUN)('auth integration', () => {
       await seedSession(userId, { family });
       await seedSession(userId);
 
-      expect(await sessions.revokeAllForUser(userId, REVOKED_REASONS.LOGOUT_ALL, new Date())).toBe(2);
+      expect(await sessions.revokeAllForUser(userId, REVOKED_REASONS.LOGOUT_ALL, new Date())).toBe(
+        2,
+      );
       // Revoking again changes nothing, so the number is a true delta - which is
       // what lets `logout-all` report "ended 2 sessions" honestly.
-      expect(await sessions.revokeAllForUser(userId, REVOKED_REASONS.LOGOUT_ALL, new Date())).toBe(0);
+      expect(await sessions.revokeAllForUser(userId, REVOKED_REASONS.LOGOUT_ALL, new Date())).toBe(
+        0,
+      );
     });
   });
 
@@ -326,7 +334,12 @@ describe.skipIf(!RUN)('auth integration', () => {
     it('burns the family when a rotated token is replayed', async () => {
       const auth = service();
       const registered = await auth.register(
-        { email: 'replay@example.com', password: PASSWORD, displayName: 'Replay User', locale: 'en' },
+        {
+          email: 'replay@example.com',
+          password: PASSWORD,
+          displayName: 'Replay User',
+          locale: 'en',
+        },
         CONTEXT,
       );
       const rotated = await auth.refresh(registered.tokens.refreshToken, CONTEXT);
@@ -350,7 +363,12 @@ describe.skipIf(!RUN)('auth integration', () => {
     it('ends every other session when the password changes', async () => {
       const auth = service();
       const registered = await auth.register(
-        { email: 'change@example.com', password: PASSWORD, displayName: 'Change User', locale: 'en' },
+        {
+          email: 'change@example.com',
+          password: PASSWORD,
+          displayName: 'Change User',
+          locale: 'en',
+        },
         CONTEXT,
       );
       // A second device.
@@ -365,18 +383,18 @@ describe.skipIf(!RUN)('auth integration', () => {
       );
 
       // The new session works.
-      await expect(
-        auth.refresh(result.tokens.refreshToken, CONTEXT),
-      ).resolves.toMatchObject({ user: { id: registered.user.id } });
+      await expect(auth.refresh(result.tokens.refreshToken, CONTEXT)).resolves.toMatchObject({
+        user: { id: registered.user.id },
+      });
       // The old password does not.
       await expect(
         auth.login({ email: 'change@example.com', password: PASSWORD }, CONTEXT),
       ).rejects.toMatchObject({ statusCode: 401 });
       // And the other device is signed out, even though it never presented the
       // old token to the changed password.
-      await expect(
-        auth.refresh(phone.tokens.refreshToken, CONTEXT),
-      ).rejects.toMatchObject({ statusCode: 401 });
+      await expect(auth.refresh(phone.tokens.refreshToken, CONTEXT)).rejects.toMatchObject({
+        statusCode: 401,
+      });
 
       const rows = await RefreshSession.find({ user: registered.user.id }).lean().exec();
       expect(rows.find((row) => row._id.toString() === phoneSession)?.revokedAt).not.toBeNull();
@@ -400,7 +418,12 @@ describe.skipIf(!RUN)('auth integration', () => {
         hasher: fastHasher,
       });
       const registered = await auth.register(
-        { email: 'lockout@example.com', password: PASSWORD, displayName: 'Lockout User', locale: 'en' },
+        {
+          email: 'lockout@example.com',
+          password: PASSWORD,
+          displayName: 'Lockout User',
+          locale: 'en',
+        },
         CONTEXT,
       );
 

@@ -70,10 +70,7 @@ export function createRedisManager(
   const client = factory(buildOptions());
 
   client.on('error', (error: unknown) => {
-    logger.error(
-      { err: error instanceof Error ? error.message : error },
-      'Redis connection error',
-    );
+    logger.error({ err: error instanceof Error ? error.message : error }, 'Redis connection error');
   });
   client.on('reconnecting', (delay: unknown) => {
     logger.warn({ delayMs: delay }, 'Redis reconnecting');

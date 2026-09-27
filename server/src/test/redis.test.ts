@@ -1,6 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { createRedisManager, redactRedisUrl, type RedisClientFactory, type RedisLike } from '../config/redis';
+import {
+  createRedisManager,
+  redactRedisUrl,
+  type RedisClientFactory,
+  type RedisLike,
+} from '../config/redis';
 
 interface FakeOptions {
   status?: string;

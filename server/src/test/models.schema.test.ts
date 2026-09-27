@@ -13,7 +13,9 @@ import {
 } from '../models';
 
 /** Index declarations, as `[fields, options]` pairs. */
-function indexEntries(model: { schema: { indexes: () => Array<[Record<string, unknown>, Record<string, unknown>]> } }): Array<[Record<string, unknown>, Record<string, unknown>]> {
+function indexEntries(model: {
+  schema: { indexes: () => Array<[Record<string, unknown>, Record<string, unknown>]> };
+}): Array<[Record<string, unknown>, Record<string, unknown>]> {
   return model.schema.indexes();
 }
 
@@ -184,7 +186,9 @@ describe('User schema', () => {
 
 describe('RefreshSession schema', () => {
   it('expires rows through a TTL index', () => {
-    const ttl = indexEntries(RefreshSession).find(([, options]) => options.name === 'refresh_expiry_ttl');
+    const ttl = indexEntries(RefreshSession).find(
+      ([, options]) => options.name === 'refresh_expiry_ttl',
+    );
 
     expect(ttl?.[0]).toMatchObject({ expiresAt: 1 });
     expect(ttl?.[1].expireAfterSeconds).toBe(0);
@@ -242,7 +246,9 @@ describe('MediaItem schema', () => {
   });
 
   it('declares a weighted text index for history search', () => {
-    const text = indexEntries(MediaItem).find(([, options]) => options.name === 'media_text_search');
+    const text = indexEntries(MediaItem).find(
+      ([, options]) => options.name === 'media_text_search',
+    );
 
     expect(text?.[0]).toEqual({ title: 'text', author: 'text' });
     expect(text?.[1].weights).toEqual({ title: 10, author: 5 });
@@ -277,7 +283,9 @@ describe('MediaFormat schema', () => {
   });
 
   it('reaps expired signed URLs through a partial TTL index', () => {
-    const ttl = indexEntries(MediaFormat).find(([, options]) => options.name === 'format_expiry_ttl');
+    const ttl = indexEntries(MediaFormat).find(
+      ([, options]) => options.name === 'format_expiry_ttl',
+    );
 
     expect(ttl?.[1].partialFilterExpression).toEqual({ url: { $type: 'string' } });
   });
@@ -312,7 +320,9 @@ describe('Download schema', () => {
   });
 
   it('reaps rows past their retention deadline', () => {
-    const ttl = indexEntries(Download).find(([, options]) => options.name === 'download_expiry_ttl');
+    const ttl = indexEntries(Download).find(
+      ([, options]) => options.name === 'download_expiry_ttl',
+    );
 
     expect(ttl?.[1].expireAfterSeconds).toBe(0);
     expect(ttl?.[1].partialFilterExpression).toEqual({ expiresAt: { $type: 'date' } });

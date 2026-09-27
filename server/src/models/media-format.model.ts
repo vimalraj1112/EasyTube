@@ -85,10 +85,7 @@ const mediaFormatSchema = new Schema<MediaFormatDocument>(
 // "Show me every variant for this item", the analysis read pattern.
 mediaFormatSchema.index({ mediaItem: 1, height: -1 }, { name: 'format_by_item' });
 // The quality picker filters to real video and real audio.
-mediaFormatSchema.index(
-  { kind: 1, bitrateKbps: -1 },
-  { name: 'format_kind_bitrate' },
-);
+mediaFormatSchema.index({ kind: 1, bitrateKbps: -1 }, { name: 'format_kind_bitrate' });
 // Stale signed URLs are never worth serving.
 mediaFormatSchema.index(
   { urlExpiresAt: 1 },
@@ -103,8 +100,4 @@ applyJsonTransform(mediaFormatSchema);
 
 export const MediaFormat =
   (models.MediaFormat as MediaFormatModel | undefined) ??
-  model<MediaFormatDocument, MediaFormatModel>(
-    'MediaFormat',
-    mediaFormatSchema,
-    'media_formats',
-  );
+  model<MediaFormatDocument, MediaFormatModel>('MediaFormat', mediaFormatSchema, 'media_formats');

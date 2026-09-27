@@ -25,7 +25,11 @@ export type { MediaItemDocument, MediaItemModel } from './media-item.model';
 export type { RefreshSessionDocument, RefreshSessionModel } from './refresh-session.model';
 export type { UserDocument, UserModel } from './user.model';
 export { baseSchemaOptions, applyJsonTransform } from './base';
-export { paginatePlugin, type PaginateOptions, type PaginateResult } from './plugins/paginate.plugin';
+export {
+  paginatePlugin,
+  type PaginateOptions,
+  type PaginateResult,
+} from './plugins/paginate.plugin';
 export { softDeletePlugin } from './plugins/soft-delete.plugin';
 
 /** Every model the application owns, in dependency order. */

@@ -11,12 +11,7 @@ import {
 } from '../config/constants';
 import { env } from '../config/env';
 import { ApiError } from '../utils/ApiError';
-import {
-  equaliseTiming,
-  hashPassword,
-  needsRehash,
-  verifyPassword,
-} from '../utils/password';
+import { equaliseTiming, hashPassword, needsRehash, verifyPassword } from '../utils/password';
 import {
   issueAccessToken,
   issueRefreshToken,
@@ -307,7 +302,8 @@ export function createAuthService(deps: AuthServiceDeps): AuthService {
       target?: string | null;
       metadata?: Record<string, unknown>;
     } = {},
-  ): Promise<void> {    try {
+  ): Promise<void> {
+    try {
       await deps.audit.write({
         action,
         actorType: extra.actor ? AUDIT_ACTOR_TYPES.USER : AUDIT_ACTOR_TYPES.SYSTEM,
@@ -333,11 +329,11 @@ export function createAuthService(deps: AuthServiceDeps): AuthService {
    *
    * The first session in a family is its own root, so its `family` is its id.
    */
-async function issueSession(
-  user: UserProfile,
-  context: RequestContext,
-  family?: string,
-): Promise<{ session: RefreshSessionRecord; tokens: AuthTokens; refreshExpiresAt: Date }> {
+  async function issueSession(
+    user: UserProfile,
+    context: RequestContext,
+    family?: string,
+  ): Promise<{ session: RefreshSessionRecord; tokens: AuthTokens; refreshExpiresAt: Date }> {
     const sessionId = new Types.ObjectId();
     const familyId = family ?? sessionId.toString();
     const expiresAt = new Date(now().getTime() + tokens.refreshTtlSeconds() * 1_000);
@@ -487,7 +483,7 @@ async function issueSession(
      */
     async refresh(refreshToken: string, context: RequestContext): Promise<AuthResult> {
       /** One opaque error for every rejected refresh, whatever the real reason. */
-  const invalid = (): ApiError => ApiError.unauthorized('Invalid or expired session.');
+      const invalid = (): ApiError => ApiError.unauthorized('Invalid or expired session.');
 
       let claims: { sub: string; sid: string; fam: string; ver: number };
       try {
