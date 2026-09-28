@@ -162,6 +162,23 @@ const envSchema = z
     SIGNED_URL_TTL_MINUTES: z.coerce.number().int().min(1).default(60),
     TEMP_DIR: z.string().default('tmp'),
 
+    /**
+     * Serve the built client from this API process.
+     *
+     * When true the API also answers every non-API route with the SPA shell, so
+     * the client and the API share one origin. That is what makes the readable
+     * `easytube_csrf` cookie work after a page reload, and it lets
+     * `COOKIE_SAME_SITE` stay `lax` instead of needing the cross-site
+     * `none` + `Secure` pair a split-host deployment requires.
+     *
+     * Off by default: a build that ships only the API should not grow a
+     * filesystem dependency, and the option is meaningless without a client
+     * build to serve.
+     */
+    SERVE_CLIENT: booleanish,
+    /** Where the built client lives, resolved against the process cwd. */
+    CLIENT_DIST_DIR: z.string().min(1).default('../client/dist'),
+
     FFMPEG_PATH: z.string().default('ffmpeg'),
     FFPROBE_PATH: z.string().default('ffprobe'),
   })

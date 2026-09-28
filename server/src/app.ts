@@ -12,6 +12,7 @@ import { env } from './config/env';
 import { logger } from './config/logger';
 import type { DependencyProbes } from './controllers/health.controller';
 import { csrfProtection } from './middleware/csrf';
+import { serveClient } from './middleware/clientAssets';
 import { errorHandler } from './middleware/errorHandler';
 import { notFoundHandler } from './middleware/notFound';
 import { requestId } from './middleware/requestId';
@@ -33,6 +34,12 @@ export interface CreateAppOptions {
    * models; tests inject a module backed by fakes so no database is needed.
    */
   auth?: AuthModule;
+  /**
+   * Absolute path to the built client, when `SERVE_CLIENT` is on. Defaults to
+   * `env.CLIENT_DIST_DIR`. Exists so tests can point at a fixture directory
+   * instead of depending on a real client build.
+   */
+  clientDistDir?: string;
 }
 
 /**
@@ -118,6 +125,12 @@ export function createApp(options: CreateAppOptions = {}): Application {
   app.use(csrfProtection());
 
   app.use(env.API_PREFIX, createV1Router({ probes, auth }));
+
+  // Before the root route so the client shell wins on `/` when it is enabled,
+  // and after the API router so `/api/v1/**` is never answered with HTML.
+  if (env.SERVE_CLIENT) {
+    serveClient(app, { distDir: options.clientDistDir });
+  }
 
   // Convenience root so `https://api.example.com/` is not a bare 404.
   app.get('/', (req: Request, res: Response) => {
