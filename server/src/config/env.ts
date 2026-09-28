@@ -88,7 +88,13 @@ const envSchema = z
      */
     REQUIRE_DATABASES_ON_BOOT: booleanish,
 
-    REDIS_URL: z.string().default('redis://127.0.0.1:6379'),
+    /**
+     * Must be a full URL including credentials. There is no localhost fallback
+     * in production: a managed Redis is the only thing that can serve it, and a
+     * silently-defaulted `redis://127.0.0.1:6379` fails as an opaque
+     * "Connection is closed." that looks like a code fault rather than config.
+     */
+    REDIS_URL: z.string().min(1, 'REDIS_URL must be set to a full redis:// or rediss:// URL'),
     REDIS_CONNECT_TIMEOUT_MS: z.coerce.number().int().min(100).default(10_000),
     REDIS_COMMAND_TIMEOUT_MS: z.coerce.number().int().min(100).default(5_000),
     REDIS_MAX_RETRIES_PER_REQUEST: z.coerce.number().int().min(0).default(3),
@@ -205,6 +211,19 @@ const envSchema = z
         code: z.ZodIssueCode.custom,
         path: ['REQUIRE_DATABASES_ON_BOOT'],
         message: 'REQUIRE_DATABASES_ON_BOOT must be true in production',
+      });
+    }
+
+    // The local default is right for `npm run dev` with Docker up and wrong for
+    // every deployed instance, where the only reachable Redis is a managed one
+    // with credentials. Catching it here names the variable instead of letting
+    // the boot fail with an unauthenticated connection error.
+    if (values.REDIS_URL === 'redis://127.0.0.1:6379') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['REDIS_URL'],
+        message:
+          'REDIS_URL still points at localhost; set it to your managed Redis URL (redis:// or rediss://)',
       });
     }
 

@@ -164,12 +164,13 @@ describe('createRedisManager', () => {
     expect(Object.keys(listeners).sort()).toEqual(['error', 'ready', 'reconnecting']);
   });
 
-  it('passes a key prefix and timeouts to the client factory', () => {
+  it('passes the connection url and a key prefix to the client factory', () => {
     const { factory } = createFakeRedis();
 
-    createRedisManager(factory);
+    createRedisManager(factory, 'redis://default:hunter2@cache.upstash.io:6379');
 
     expect(factory).toHaveBeenCalledWith(
+      'redis://default:hunter2@cache.upstash.io:6379',
       expect.objectContaining({
         lazyConnect: true,
         keyPrefix: 'easytube:',

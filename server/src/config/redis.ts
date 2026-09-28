@@ -31,7 +31,7 @@ export interface RedisLike {
   on(event: string, listener: (...args: unknown[]) => void): unknown;
 }
 
-export type RedisClientFactory = (options: RedisOptions) => RedisLike;
+export type RedisClientFactory = (url: string, options: RedisOptions) => RedisLike;
 
 export interface RedisManager {
   /** The underlying client. Exposed for Phase 7 (BullMQ) and Phase 14 (rate limits). */
@@ -64,10 +64,10 @@ function buildOptions(): RedisOptions {
  * built on it, so the connection settings and key prefix stay consistent.
  */
 export function createRedisManager(
-  factory: RedisClientFactory = (options) => new Redis(options),
+  factory: RedisClientFactory = (url, options) => new Redis(url, options),
   url: string = env.REDIS_URL,
 ): RedisManager {
-  const client = factory(buildOptions());
+  const client = factory(url, buildOptions());
 
   client.on('error', (error: unknown) => {
     logger.error({ err: error instanceof Error ? error.message : error }, 'Redis connection error');
